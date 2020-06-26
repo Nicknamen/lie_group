@@ -10,7 +10,6 @@ THIS FILE CONTAINS SCATTERED RESULTS TO BE CORRECTLY PLACED IN MATHLIB
 
 -/
 
-import geometry.manifold.smooth_manifold_with_corners
 import ..mathlib_times_cont_mdiff.src.geometry.manifold.times_cont_mdiff
 
 noncomputable theory
@@ -47,10 +46,6 @@ variables {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {η : Type*} {ε :
 (e : local_homeomorph α β) (f : local_homeomorph β γ)
 (e' : local_homeomorph δ η) (f' : local_homeomorph η ε)
 
-lemma prod_symm :
-  (e.prod e').symm = (e.symm.prod e'.symm) :=
-by ext x : 1; simp
-
 lemma prod_comp :
   (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
 begin
@@ -59,8 +54,7 @@ begin
   { simp },
   { ext y,
     rcases y with ⟨a, b⟩,
-    simp [local_equiv.trans_source],
-    tauto, }
+    simp [local_equiv.trans_source], }
 end
 
 end local_homeomorph
@@ -170,18 +164,18 @@ end
   `times_cont_mdiff I I' ⊤ f` makes everything unreadable and harder to understand for someone
   who does not know Mathlib well. -/
   def smooth (I : model_with_corners 𝕜 E H) (I' : model_with_corners 𝕜 E' H')
-  {M : Type*} [topological_space M] [manifold H M] [smooth_manifold_with_corners I M]
-  {N : Type*} [topological_space N] [manifold H' N] [smooth_manifold_with_corners I' N]
+  {M : Type*} [topological_space M] [charted_space H M] [smooth_manifold_with_corners I M]
+  {N : Type*} [topological_space N] [charted_space H' N] [smooth_manifold_with_corners I' N]
   (f: M → N) := times_cont_mdiff I I' ⊤ f
 
   def smooth_on (I : model_with_corners 𝕜 E H) (I' : model_with_corners 𝕜 E' H')
-  {M : Type*} [topological_space M] [manifold H M] [smooth_manifold_with_corners I M]
-  {N : Type*} [topological_space N] [manifold H' N] [smooth_manifold_with_corners I' N]
+  {M : Type*} [topological_space M] [charted_space H M] [smooth_manifold_with_corners I M]
+  {N : Type*} [topological_space N] [charted_space H' N] [smooth_manifold_with_corners I' N]
   (f: M → N) (s : set M) := times_cont_mdiff_on I I' ⊤ f s
 
   variables {I : model_with_corners 𝕜 E H} {I' : model_with_corners 𝕜 E' H'}
-  {M : Type*} [topological_space M] [manifold H M] [smooth_manifold_with_corners I M]
-  {N : Type*} [topological_space N] [manifold H' N] [smooth_manifold_with_corners I' N]
+  {M : Type*} [topological_space M] [charted_space H M] [smooth_manifold_with_corners I M]
+  {N : Type*} [topological_space N] [charted_space H' N] [smooth_manifold_with_corners I' N]
 
   lemma smooth_id : smooth I I (id : M → M) :=
   begin
@@ -220,9 +214,9 @@ variables {E'' : Type*} [normed_group E''] [normed_space 𝕜 E'']
 {H'' : Type*} [topological_space H''] {I'' : model_with_corners 𝕜 E'' H''}
 {I : model_with_corners 𝕜 E H}
 {I' : model_with_corners 𝕜 E' H'}
-{M : Type*} [topological_space M] [manifold H M] [smooth_manifold_with_corners I M]
-{M' : Type*} [topological_space M'] [manifold H' M'] [smooth_manifold_with_corners I' M']
-{M'' : Type*} [topological_space M''] [manifold H'' M''] [smooth_manifold_with_corners I'' M'']
+{M : Type*} [topological_space M] [charted_space H M] [smooth_manifold_with_corners I M]
+{M' : Type*} [topological_space M'] [charted_space H' M'] [smooth_manifold_with_corners I' M']
+{M'' : Type*} [topological_space M''] [charted_space H'' M''] [smooth_manifold_with_corners I'' M'']
 
 lemma smooth_on.comp {s : set M} {t : set M'} {f : M → M'} {g : M' → M''}
   (hg : smooth_on I' I'' g t) (hf : smooth_on I I' f s)
@@ -233,8 +227,8 @@ lemma times_cont_mdiff.comp {n : with_top ℕ} {f : M → M'} {g : M' → M''}
   (hg : times_cont_mdiff I' I'' n g) (hf : times_cont_mdiff I I' n f) :
   times_cont_mdiff I I'' n (g ∘ f) :=
 begin
-  have hs : (set.univ ⊆ f ⁻¹' set.univ) := by rw set.preimage_univ,
-  have h := times_cont_mdiff_on.comp (times_cont_mdiff_on_univ.2 hg) (times_cont_mdiff_on_univ.2 hf) hs,
+  have hs : (set.univ ⊆ f ⁻¹' set.univ), by rw set.preimage_univ,
+  have h := (times_cont_mdiff_on_univ.2 hg).comp (times_cont_mdiff_on_univ.2 hf) hs,
   exact times_cont_mdiff_on_univ.1 h,
 end
 

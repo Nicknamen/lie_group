@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Nicolò Cavalleri.
 -/
 
-import geometry.manifold.real_instances
 import algebra.group.prod
 import .prod_manifold
-import ..mathlib_times_cont_mdiff.src.geometry.manifold.times_cont_mdiff
 
 noncomputable theory
 
@@ -34,7 +32,7 @@ universes u v
 /-- A Lie (additive) group is a group and a smooth manifold at the same time in which
 the addition and negation operations are smooth. -/
 class Lie_add_group {𝕜 : Type*} [nondiscrete_normed_field 𝕜] {E : Type*} [normed_group E] [normed_space 𝕜 E] [finite_dimensional 𝕜 E]
-  (I : model_with_corners 𝕜 E E) (G : Type*) [topological_space G] [manifold E G]
+  (I : model_with_corners 𝕜 E E) (G : Type*) [topological_space G] [charted_space E G]
   [smooth_manifold_with_corners I G] [add_group G] : Prop :=
   (smooth_add : smooth (I.prod I) I (λ p : G×G, p.1 + p.2))
   (smooth_neg : smooth I I (λ a:G, -a))
@@ -43,7 +41,7 @@ class Lie_add_group {𝕜 : Type*} [nondiscrete_normed_field 𝕜] {E : Type*} [
 the multiplication and inverse operations are smooth. -/
 @[to_additive Lie_add_group]
 class Lie_group {𝕜 : Type*} [nondiscrete_normed_field 𝕜] {E : Type*} [normed_group E] [normed_space 𝕜 E] [finite_dimensional 𝕜 E]
-  (I : model_with_corners 𝕜 E E) (G : Type*) [topological_space G] [manifold E G]
+  (I : model_with_corners 𝕜 E E) (G : Type*) [topological_space G] [charted_space E G]
   [smooth_manifold_with_corners I G] [group G] : Prop :=
   (smooth_mul : smooth (I.prod I) I (λ p : G×G, p.1 * p.2))
   (smooth_inv : smooth I I (λ a:G, a⁻¹))
@@ -54,13 +52,13 @@ section
 
 variables {𝕜 : Type*} [nondiscrete_normed_field 𝕜]
 {E : Type*} [normed_group E] [normed_space 𝕜 E] [finite_dimensional 𝕜 E]  {I : model_with_corners 𝕜 E E}
-{G : Type*} [topological_space G] [manifold E G] [smooth_manifold_with_corners I G] [group G] [Lie_group I G]
+{G : Type*} [topological_space G] [charted_space E G] [smooth_manifold_with_corners I G] [group G] [Lie_group I G]
 {E' : Type*} [normed_group E'] [normed_space 𝕜 E'] [finite_dimensional 𝕜 E']
 {H' : Type*} [topological_space H'] {I' : model_with_corners 𝕜 E' H'}
-{M : Type*} [topological_space M] [manifold H' M] [smooth_manifold_with_corners I' M]
+{M : Type*} [topological_space M] [charted_space H' M] [smooth_manifold_with_corners I' M]
 {E'' : Type*} [normed_group E''] [normed_space 𝕜 E''] [finite_dimensional 𝕜 E'']
 {H'' : Type*} [topological_space H''] {I'' : model_with_corners 𝕜 E'' H''}
-{M' : Type*} [topological_space M'] [manifold H'' M'] [smooth_manifold_with_corners I'' M']
+{M' : Type*} [topological_space M'] [charted_space H'' M'] [smooth_manifold_with_corners I'' M']
 
 @[to_additive]
 lemma smooth_mul : smooth (I.prod I) I (λ p : G×G, p.1 * p.2) :=
@@ -105,7 +103,7 @@ smooth_inv.comp_smooth_on hf -/
 /- Coercion to topological group -/
 /- @[to_additive] - how does it work here? -/
 instance to_topological_group {𝕜 : Type*} [nondiscrete_normed_field 𝕜] {E : Type*} [normed_group E] [normed_space 𝕜 E] [finite_dimensional 𝕜 E]
-  (I : model_with_corners 𝕜 E E) (G : Type*) [topological_space G] [manifold E G]
+  (I : model_with_corners 𝕜 E E) (G : Type*) [topological_space G] [charted_space E G]
   [smooth_manifold_with_corners I G] [group G] [h : Lie_group I G]: topological_group G :=
 {
   continuous_mul := h.smooth_mul.1,
@@ -116,9 +114,9 @@ instance to_topological_group {𝕜 : Type*} [nondiscrete_normed_field 𝕜] {E 
 @[to_additive]
 instance prod_Lie_group {𝕜 : Type*} [nondiscrete_normed_field 𝕜]
 {E : Type*} [normed_group E] [normed_space 𝕜 E] [finite_dimensional 𝕜 E]  {I : model_with_corners 𝕜 E E}
-{G : Type*} [topological_space G] [manifold E G] [smooth_manifold_with_corners I G] [group G] [h : Lie_group I G]
+{G : Type*} [topological_space G] [charted_space E G] [smooth_manifold_with_corners I G] [group G] [h : Lie_group I G]
 {E' : Type*} [normed_group E'] [normed_space 𝕜 E'] [finite_dimensional 𝕜 E']  {I' : model_with_corners 𝕜 E' E'}
-{G' : Type*} [topological_space G'] [manifold E' G'] [smooth_manifold_with_corners I' G'] [group G'] [h' : Lie_group I' G'] :
+{G' : Type*} [topological_space G'] [charted_space E' G'] [smooth_manifold_with_corners I' G'] [group G'] [h' : Lie_group I' G'] :
 Lie_group (I.prod I') (G×G') :=
 {
   smooth_mul := ((smooth_fst.comp smooth_fst).mul (smooth_fst.comp smooth_snd)).prod_mk

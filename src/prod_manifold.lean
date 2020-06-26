@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Nicolò Cavalleri.
 -/
 
-import geometry.manifold.smooth_manifold_with_corners
 import .preamble_results
 
 noncomputable theory
@@ -12,7 +11,7 @@ noncomputable theory
 /-!
 # Lie groups
 
-We define product manifolds and prove smoothnes of the classical maps associated with products.
+We define product manifolds and prove smoothness of the classical maps associated with products.
 
 ## Main definitions and statements
 
@@ -23,34 +22,38 @@ We define product manifolds and prove smoothnes of the classical maps associated
 * `smooth_iff_proj_smooth`  : A map is smooth iff its projections are.
 -/
 
-section prod_manifold
+section prod_charted_space
 
-instance prod_manifold (H : Type*) [topological_space H]
-  (M : Type*) [topological_space M] [manifold H M]
+instance prod_charted_space (H : Type*) [topological_space H]
+  (M : Type*) [topological_space M] [charted_space H M]
   (H' : Type*) [topological_space H']
-  (M' : Type*) [topological_space M'] [manifold H' M'] :
-  manifold (H×H') (M×M') :=
+  (M' : Type*) [topological_space M'] [charted_space H' M'] :
+  charted_space (H×H') (M×M') :=
 { atlas            := λ f : (local_homeomorph (M×M') (H×H')),
-                        ∃ g, (g ∈ (manifold.atlas H M)) ∧ (∃ h, (h ∈ (manifold.atlas H' M')) ∧ (f = (local_homeomorph.prod g h))),
-  chart_at         := (λ x: (M×M'), (manifold.chart_at H x.1).prod (manifold.chart_at H' x.2)),
+                        ∃ g, (g ∈ (charted_space.atlas H M)) ∧ (∃ h, (h ∈ (charted_space.atlas H' M')) ∧ (f = (local_homeomorph.prod g h))),
+  chart_at         := (λ x: (M×M'), (charted_space.chart_at H x.1).prod (charted_space.chart_at H' x.2)),
   /- Why only H??? -/
-  mem_chart_source := λ x, by simp,
+  mem_chart_source :=
+  begin
+    intro x,
+    simp only [local_homeomorph.prod_to_local_equiv, set.mem_prod, mem_chart_source, and_self, local_equiv.prod_source],
+  end,
   chart_mem_atlas  := 
   begin
     intro x,
-    use (manifold.chart_at H x.1),
+    use (charted_space.chart_at H x.1),
     split,
     { apply chart_mem_atlas _, },
-    { use (manifold.chart_at H' x.2), simp only [chart_mem_atlas, eq_self_iff_true, and_self], }
+    { use (charted_space.chart_at H' x.2), simp only [chart_mem_atlas, eq_self_iff_true, and_self], }
   end
 }
 
-section prod_manifold
+section prod_charted_space
 
 variables {H : Type*} [topological_space H]
-{M : Type*} [topological_space M] [manifold H M]
+{M : Type*} [topological_space M] [charted_space H M]
 {H' : Type*} [topological_space H']
-{M' : Type*} [topological_space M'] [manifold H' M']
+{M' : Type*} [topological_space M'] [charted_space H' M']
 {x : M×M'}
 
 @[simp] lemma chart_of_prod_eq_prod_of_charts_coe :
@@ -95,15 +98,15 @@ begin
     { rintro ⟨⟨h1, h2⟩, h3, h4⟩, exact ⟨⟨h1, h3⟩, ⟨h2, h4⟩⟩, } }
 end
 
-end prod_manifold
+end prod_charted_space
 
 instance prod_smooth_manifold_with_corners {𝕜 : Type*} [nondiscrete_normed_field 𝕜]
   {E : Type*} [normed_group E] [normed_space 𝕜 E]
   {E' : Type*} [normed_group E'] [normed_space 𝕜 E']
   {H : Type*} [topological_space H] (I : model_with_corners 𝕜 E H)
   {H' : Type*} [topological_space H'] (I' : model_with_corners 𝕜 E' H')
-  (M : Type*) [topological_space M] [manifold H M] [smooth_manifold_with_corners I M]
-  (M' : Type*) [topological_space M'] [manifold H' M'] [smooth_manifold_with_corners I' M'] :
+  (M : Type*) [topological_space M] [charted_space H M] [smooth_manifold_with_corners I M]
+  (M' : Type*) [topological_space M'] [charted_space H' M'] [smooth_manifold_with_corners I' M'] :
   smooth_manifold_with_corners (I.prod I') (M×M') :=
 {
   compatible :=
@@ -130,10 +133,10 @@ variables {𝕜 : Type*} [nondiscrete_normed_field 𝕜]
 {G' : Type*} [topological_space G']
 {I : model_with_corners 𝕜 E H} {I' : model_with_corners 𝕜 E' H'}
 {J : model_with_corners 𝕜 F G} {J' : model_with_corners 𝕜 F' G'}
-{M : Type*} [topological_space M] [manifold H M] [smooth_manifold_with_corners I M]
-{M' : Type*} [topological_space M'] [manifold H' M'] [smooth_manifold_with_corners I' M']
-{N : Type*} [topological_space N] [manifold G N] [smooth_manifold_with_corners J N]
-{N' : Type*} [topological_space N'] [manifold G' N'] [smooth_manifold_with_corners J' N']
+{M : Type*} [topological_space M] [charted_space H M] [smooth_manifold_with_corners I M]
+{M' : Type*} [topological_space M'] [charted_space H' M'] [smooth_manifold_with_corners I' M']
+{N : Type*} [topological_space N] [charted_space G N] [smooth_manifold_with_corners J N]
+{N' : Type*} [topological_space N'] [charted_space G' N'] [smooth_manifold_with_corners J' N']
 
 @[simp] lemma model_with_corners_prod_to_local_equiv :
   (I.prod J).to_local_equiv = (I.to_local_equiv).prod (J.to_local_equiv) :=
@@ -156,7 +159,7 @@ begin
   have f_smooth_at := f_smooth x.fst y.fst,
   have g_smooth_at := g_smooth x.snd y.snd,
   clear f_smooth g_smooth,
-  have h := times_cont_diff_on.map_prod f_smooth_at g_smooth_at,
+  have h := f_smooth_at.map_prod g_smooth_at,
   clear f_smooth_at g_smooth_at,
   simp only [function.comp, ext_chart_at, model_with_corners.to_local_equiv_coe_symm, local_homeomorph.coe_coe_symm,
     local_homeomorph.coe_coe, local_equiv.coe_trans, local_equiv.coe_trans_symm, model_with_corners.to_local_equiv_coe] at h,
@@ -277,7 +280,7 @@ end
 
 variables {E'' : Type*} [normed_group E''] [normed_space 𝕜 E'']
 {H'' : Type*} [topological_space H''] {I'' : model_with_corners 𝕜 E'' H''}
-{M'' : Type*} [topological_space M''] [manifold H'' M'']
+{M'' : Type*} [topological_space M''] [charted_space H'' M'']
 
 lemma smooth.prod_mk {f : M → M'} {g : M → N'} (hf : smooth I I' f) (hg : smooth I J' g) :
   smooth I (I'.prod J') (λx, (f x, g x)) :=
@@ -323,7 +326,7 @@ begin
   { intro h, exact ⟨smooth.comp smooth_fst h, smooth.comp smooth_snd h⟩ },
   { rintro ⟨h_fst, h_snd⟩,
     have h := smooth.prod_mk h_fst h_snd,
-    simp only [prod.mk.eta] at h, /- What is simp doing? -/
+    simp only [prod.mk.eta] at h, /- What is simp doing? I would like to find a way to replace it. -/
     exact h, }
 end
 
@@ -332,4 +335,4 @@ lemma smooth.map_diag : smooth I (I.prod I) (map.diag M) :=
 
 end smooth
 
-end prod_manifold
+end prod_charted_space
